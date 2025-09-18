@@ -1,0 +1,49 @@
+name: Run C-Star KML Generation
+
+"on":
+  schedule:
+    # Run daily at 4 PM UTC (16:00 UTC)
+    - cron: '0 16 * * *'
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  generate-cstar-kml:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # Install optional dependencies for enhanced functionality
+        pip install matplotlib shapely
+        
+    - name: Create output directory
+      run: mkdir -p Cstar_Locations
+      
+    - name: Run C-Star KML script
+      run: |
+        python scripts/cstar_kml.py --nhc-cone-url="" < /dev/null
+        
+    - name: Upload generated KMZ file
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cstar-locations-kmz
+        path: Cstar_Locations/cstar_locations.kmz
+        retention-days: 7
+        
+    - name: List generated files
+      if: always()
+      run: |
+        echo "Generated files:"
+        ls -la Cstar_Locations/
