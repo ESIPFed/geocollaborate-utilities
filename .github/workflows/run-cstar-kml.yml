@@ -36,6 +36,7 @@ jobs:
       run: mkdir -p Cstar_Locations
       
     - name: Run C-Star KML script
+      continue-on-error: true
       run: |
         python scripts/cstar_kml.py --nhc-cone-url="" < /dev/null
         
