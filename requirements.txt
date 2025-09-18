@@ -1,0 +1,6 @@
+# requirements.txt for geocollaborate-utilities
+# Use this file for Codespaces and GitHub Actions
+# All direct dependencies are listed below with pinned versions for reproducibility.
+
+requests==2.31.0
+# All other imports are from the Python standard library and do not need to be listed.
