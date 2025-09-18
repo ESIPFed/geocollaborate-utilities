@@ -10,10 +10,15 @@ name: Run C-Star KML Generation
 jobs:
   generate-cstar-kml:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allow pushing changes to repository
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0  # Fetch full history for proper git operations
       
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -31,8 +36,27 @@ jobs:
       run: mkdir -p Cstar_Locations
       
     - name: Run C-Star KML script
+      continue-on-error: true
       run: |
         python scripts/cstar_kml.py --nhc-cone-url="" < /dev/null
+        
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Commit and push updated files
+      run: |
+        # Check if there are any changes to commit
+        git add Cstar_Locations/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Committing updated files:"
+          git status --porcelain
+          git commit -m "Update C-Star KMZ files - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          git push
+        fi
         
     - name: Upload generated KMZ file
       if: always()
