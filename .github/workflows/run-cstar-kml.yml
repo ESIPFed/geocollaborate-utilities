@@ -2,8 +2,8 @@ name: Run C-Star KML Generation
 
 "on":
   schedule:
-    # Run daily at 4 PM UTC (16:00 UTC)
-    - cron: '0 16 * * *'
+    # Run every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
   # Allow manual triggering for testing
   workflow_dispatch:
 
